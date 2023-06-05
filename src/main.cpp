@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
 #include "Ponto.hpp"
 
 int produtoVetorial3(const Ponto& A, const Ponto& B, const Ponto& C) {
@@ -151,13 +152,13 @@ Ponto* MergeConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
 
 void insertionSort(Ponto pontos[], int n, const Ponto& reference) {
     for (int i = 1; i < n; i++) {
-        Ponto key = pontos[i];
+        Ponto chave = pontos[i];
         int j = i - 1;
-        while (j >= 0 && !compararPontos(pontos[j], key, reference)) {
+        while (j >= 0 && !compararPontos(pontos[j], chave, reference)) {
             pontos[j + 1] = pontos[j];
             j--;
         }
-        pontos[j + 1] = key;
+        pontos[j + 1] = chave;
     }
 }
 
