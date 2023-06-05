@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/tontomona/ED/AP9",
-      "program": "/home/tontomona/ED/AP9/build/Debug/outDebug",
+      "cwd": "/home/tontomona/ConvexHull",
+      "program": "/home/tontomona/ConvexHull/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
