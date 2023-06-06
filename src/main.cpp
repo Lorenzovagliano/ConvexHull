@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "Ponto.hpp"
+#include "Reta.hpp"
 
 int produtoVetorial3(const Ponto& A, const Ponto& B, const Ponto& C) {
     return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
