@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <chrono>
 
 #include "Ponto.hpp"
 #include "Reta.hpp"
@@ -212,63 +213,41 @@ int valorMaximo(const Ponto pontos[], int n) {
     return maxVal;
 }
 
-void countingSort(Ponto points[], int n, int exp) {
-    const int numBuckets = 10;
-    int count[numBuckets] = { 0 };
+void radixSort(Ponto pontos[], int n) {
+    const int numBaldes = 10;
+    int maxVal = valorMaximo(pontos, n);
+
+    int exp = 1;
     Ponto* output = new Ponto[n];
+    Ponto* temp = new Ponto[n];
 
-    for (int i = 0; i < n; i++) {
-        int digit = ((points[i].x) / exp) % numBuckets;
-        count[digit]++;
-    }
+    while (maxVal / exp > 0) {
+        int count[numBaldes] = { 0 };
 
-    for (int i = 1; i < numBuckets; i++) {
-        count[i] += count[i - 1];
-    }
+        for (int i = 0; i < n; i++) {
+            int digit = (pontos[i].x / exp) % numBaldes;
+            count[digit]++;
+        }
 
-    for (int i = n - 1; i >= 0; i--) {
-        int digit = ((points[i].x) / exp) % numBuckets;
-        output[count[digit] - 1] = points[i];
-        count[digit]--;
-    }
+        for (int i = 1; i < numBaldes; i++) {
+            count[i] += count[i - 1];
+        }
 
-    for (int i = 0; i < n; i++) {
-        points[i] = output[i];
+        for (int i = n - 1; i >= 0; i--) {
+            int digit = (pontos[i].x / exp) % numBaldes;
+            temp[count[digit] - 1] = pontos[i];
+            count[digit]--;
+        }
+
+        for (int i = 0; i < n; i++) {
+            pontos[i] = temp[i];
+        }
+
+        exp *= numBaldes;
     }
 
     delete[] output;
-}
-
-void radixSort(Ponto points[], int n) {
-    int maxVal = valorMaximo(points, n);
-
-    for (int exp = 1; maxVal / exp > 0; exp *= 10) {
-        countingSort(points, n, exp);
-    }
-}
-
-void bucketSort(Ponto points[], int n) {
-    const int numBuckets = n;
-    Ponto* buckets = new Ponto[numBuckets];
-    for (int i = 0; i < numBuckets; i++) {
-        buckets[i] = points[0];
-    }
-
-    Ponto reference = points[0];
-    for (int i = 1; i < n; i++) {
-        if (compararPontos(points[i], buckets[i], reference)) {
-            reference = points[i];
-        }
-        while (compararPontos(buckets[i], points[i], reference)) {
-            i++;
-        }
-        if (i < n) {
-            std::swap(points[i], buckets[i]);
-        }
-        i--;
-    }
-
-    delete[] buckets;
+    delete[] temp;
 }
 
 Ponto* RadixConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
@@ -288,7 +267,7 @@ Ponto* RadixConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     pontos[0] = pontos[menorIndice];
     pontos[menorIndice] = temp;
 
-    bucketSort(pontos + 1, n - 1);
+    radixSort(pontos + 1, n - 1);
 
     Ponto* pontosFecho = new Ponto[n];
     tamanhoFecho = 0;
@@ -324,7 +303,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    const int maxPontos = 10000;  // Número máximo de
+    const int maxPontos = 100000;  // Maximum number of pontos
     Ponto pontos[maxPontos];
     int n = 0;
 
@@ -343,41 +322,64 @@ int main(int argc, char* argv[]) {
     }
 
     int tamanhoFecho = 0;
-    Ponto* pontosFecho = JarvisFecho(pontos, n, tamanhoFecho);
-    tamanhoFecho = 0;
+
+    //Chamando a função do Jarvis e calculando o tempo para executá-la
+    long double tempoJarvis;
+    auto start = std::chrono::high_resolution_clock::now();
+
+    Ponto* JarvisConvexHullPoints = JarvisFecho(pontos, n, tamanhoFecho);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    tempoJarvis = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    tempoJarvis *= 1e-9;
+
+    //Chamando a função do Graham + MergeSort e calculando o tempo para executá-la
+    long double tempoGrahamMerge;
+    start = std::chrono::high_resolution_clock::now();
+
     Ponto* GrahamMergeConvexHullPoints = MergeConvexHullGraham(pontos, n, tamanhoFecho);
-    tamanhoFecho = 0;
-    Ponto* GrahamRadixConvexHullPoints = RadixConvexHullGraham(pontos, n, tamanhoFecho);
-    tamanhoFecho = 0;
+
+    end = std::chrono::high_resolution_clock::now();
+    tempoGrahamMerge = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    tempoGrahamMerge *= 1e-9;
+
+    //Chamando a função do Graham + InsertionSort e calculando o tempo para executá-la
+    long double tempoGrahamInsert;
+    start = std::chrono::high_resolution_clock::now();
+
     Ponto* GrahamInsertConvexHullPoints = InsertConvexHullGraham(pontos, n, tamanhoFecho);
 
-    std::cout << "Jarvis Convex Hull Points:\n";
-    for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << "(" << pontosFecho[i].x << ", " << pontosFecho[i].y << ")\n";
+    end = std::chrono::high_resolution_clock::now();
+    tempoGrahamInsert = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    tempoGrahamInsert *= 1e-9;
+
+    //Chamando a função do Graham + RadixSort e calculando o tempo para executá-la
+    long double tempoGrahamRadix;
+    start = std::chrono::high_resolution_clock::now();
+
+    Ponto* GrahamRadixConvexHullPoints = RadixConvexHullGraham(pontos, n, tamanhoFecho);
+
+    end = std::chrono::high_resolution_clock::now();
+    tempoGrahamRadix = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    tempoGrahamRadix *= 1e-9;
+
+
+    //Realizando a impressão das saídas
+    std::cout << "FECHO CONVEXO\n";
+    for (int i = 0; i < 6; i++) {
+        std::cout << JarvisConvexHullPoints[i].x << ' ' << JarvisConvexHullPoints[i].y << std::endl;
     }
 
     std::cout << std::endl;
 
-    std::cout << "Graham + MergeSort Convex Hull Points:\n";
-    for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << "(" << GrahamMergeConvexHullPoints[i].x << ", " << GrahamMergeConvexHullPoints[i].y << ")\n";
-    }
+    std::cout << "GRAHAM+MERGESORT: " << tempoGrahamMerge << std::endl;
+    std::cout << "GRAHAM+INSERTIONSORT: " << tempoGrahamInsert << std::endl;
+    std::cout << "GRAHAM+RADIXSORT: " << tempoGrahamRadix << std::endl;
+    std::cout << "JARVIS: " << tempoJarvis << std::endl;
 
-    std::cout << std::endl;
+    
 
-    std::cout << "Graham + InsertionSort Convex Hull Points:\n";
-    for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << "(" << GrahamInsertConvexHullPoints[i].x << ", " << GrahamInsertConvexHullPoints[i].y << ")\n";
-    }    
-
-    std::cout << std::endl;
-
-    std::cout << "Graham + RadixSort Convex Hull Points:\n";
-    for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << "(" << GrahamRadixConvexHullPoints[i].x << ", " << GrahamRadixConvexHullPoints[i].y << ")\n";
-    }    
-
-    delete[] pontosFecho;
+    delete[] JarvisConvexHullPoints;
     delete[] GrahamMergeConvexHullPoints;
     delete[] GrahamInsertConvexHullPoints;
     delete[] GrahamRadixConvexHullPoints;
