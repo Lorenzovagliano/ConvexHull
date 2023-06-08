@@ -203,53 +203,31 @@ Ponto* InsertConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     return pontosFecho;
 }
 
-int valorMaximo(const Ponto pontos[], int n) {
-    int maxVal = 0;
-    for (int i = 0; i < n; i++) {
-        maxVal = (pontos[i].x > maxVal) ? pontos[i].x : maxVal;
-        maxVal = (pontos[i].y > maxVal) ? pontos[i].y : maxVal;
-    }
-    return maxVal;
-}
-
-void radixSort(Ponto pontos[], int n) {
-    const int numBaldes = 10;
-    int maxVal = valorMaximo(pontos, n);
-
-    int exp = 1;
-    Ponto* output = new Ponto[n];
-    Ponto* temp = new Ponto[n];
-
-    while (maxVal / exp > 0) {
-        int count[numBaldes] = { 0 };
-
-        for (int i = 0; i < n; i++) {
-            int digit = (pontos[i].x / exp) % numBaldes;
-            count[digit]++;
-        }
-
-        for (int i = 1; i < numBaldes; i++) {
-            count[i] += count[i - 1];
-        }
-
-        for (int i = n - 1; i >= 0; i--) {
-            int digit = (pontos[i].x / exp) % numBaldes;
-            temp[count[digit] - 1] = pontos[i];
-            count[digit]--;
-        }
-
-        for (int i = 0; i < n; i++) {
-            pontos[i] = temp[i];
-        }
-
-        exp *= numBaldes;
+void bucketSort(Ponto points[], int n) {
+    const int numBuckets = n;
+    Ponto* buckets = new Ponto[numBuckets];
+    for (int i = 0; i < numBuckets; i++) {
+        buckets[i] = points[0];
     }
 
-    delete[] output;
-    delete[] temp;
+    Ponto reference = points[0];
+    for (int i = 1; i < n; i++) {
+        if (compararPontos(points[i], buckets[i], reference)) {
+            reference = points[i];
+        }
+        while (compararPontos(buckets[i], points[i], reference)) {
+            i++;
+        }
+        if (i < n) {
+            std::swap(points[i], buckets[i]);
+        }
+        i--;
+    }
+
+    delete[] buckets;
 }
 
-Ponto* RadixConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
+Ponto* BucketConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     if (n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
@@ -266,7 +244,7 @@ Ponto* RadixConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     pontos[0] = pontos[menorIndice];
     pontos[menorIndice] = temp;
 
-    radixSort(pontos + 1, n - 1);
+    bucketSort(pontos + 1, n - 1);
 
     Ponto* pontosFecho = new Ponto[n];
     tamanhoFecho = 0;
@@ -302,7 +280,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    const int maxPontos = 100000;  // Maximum number of pontos
+    const int maxPontos = 10000;  // Número máximo de
     Ponto pontos[maxPontos];
     int n = 0;
 
@@ -322,9 +300,12 @@ int main(int argc, char* argv[]) {
 
     int tamanhoFecho = 0;
     Ponto* pontosFecho = JarvisFecho(pontos, n, tamanhoFecho);
+    tamanhoFecho = 0;
     Ponto* GrahamMergeConvexHullPoints = MergeConvexHullGraham(pontos, n, tamanhoFecho);
+    tamanhoFecho = 0;
+    Ponto* GrahamBucketConvexHullPoints = BucketConvexHullGraham(pontos, n, tamanhoFecho);
+    tamanhoFecho = 0;
     Ponto* GrahamInsertConvexHullPoints = InsertConvexHullGraham(pontos, n, tamanhoFecho);
-    Ponto* GrahamRadixConvexHullPoints = RadixConvexHullGraham(pontos, n, tamanhoFecho);
 
     std::cout << "Jarvis Convex Hull Points:\n";
     for (int i = 0; i < tamanhoFecho; i++) {
@@ -347,15 +328,15 @@ int main(int argc, char* argv[]) {
 
     std::cout << std::endl;
 
-    std::cout << "Graham + RadixSort Convex Hull Points:\n";
+    std::cout << "Graham + BucketSort Convex Hull Points:\n";
     for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << "(" << GrahamRadixConvexHullPoints[i].x << ", " << GrahamRadixConvexHullPoints[i].y << ")\n";
+        std::cout << "(" << GrahamBucketConvexHullPoints[i].x << ", " << GrahamBucketConvexHullPoints[i].y << ")\n";
     }    
 
     delete[] pontosFecho;
     delete[] GrahamMergeConvexHullPoints;
     delete[] GrahamInsertConvexHullPoints;
-    delete[] GrahamRadixConvexHullPoints;
+    delete[] GrahamBucketConvexHullPoints;
 
     return 0;
 }

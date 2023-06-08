@@ -1,7 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <chrono>
+#include <string>
 
+#include <SFML/Graphics.hpp>
 #include "Ponto.hpp"
 #include "Reta.hpp"
 
@@ -203,50 +206,6 @@ Ponto* InsertConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     return pontosFecho;
 }
 
-int valorMaximo(const Ponto pontos[], int n) {
-    int maxVal = 0;
-    for (int i = 0; i < n; i++) {
-        maxVal = (pontos[i].x > maxVal) ? pontos[i].x : maxVal;
-        maxVal = (pontos[i].y > maxVal) ? pontos[i].y : maxVal;
-    }
-    return maxVal;
-}
-
-void countingSort(Ponto points[], int n, int exp) {
-    const int numBuckets = 10;
-    int count[numBuckets] = { 0 };
-    Ponto* output = new Ponto[n];
-
-    for (int i = 0; i < n; i++) {
-        int digit = ((points[i].x) / exp) % numBuckets;
-        count[digit]++;
-    }
-
-    for (int i = 1; i < numBuckets; i++) {
-        count[i] += count[i - 1];
-    }
-
-    for (int i = n - 1; i >= 0; i--) {
-        int digit = ((points[i].x) / exp) % numBuckets;
-        output[count[digit] - 1] = points[i];
-        count[digit]--;
-    }
-
-    for (int i = 0; i < n; i++) {
-        points[i] = output[i];
-    }
-
-    delete[] output;
-}
-
-void radixSort(Ponto points[], int n) {
-    int maxVal = valorMaximo(points, n);
-
-    for (int exp = 1; maxVal / exp > 0; exp *= 10) {
-        countingSort(points, n, exp);
-    }
-}
-
 void bucketSort(Ponto points[], int n) {
     const int numBuckets = n;
     Ponto* buckets = new Ponto[numBuckets];
@@ -271,7 +230,7 @@ void bucketSort(Ponto points[], int n) {
     delete[] buckets;
 }
 
-Ponto* RadixConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
+Ponto* BucketConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     if (n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
@@ -313,18 +272,33 @@ Ponto* RadixConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
 
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " <input_file.txt>\n";
+    if (argc != 3) {
+        std::cout << "\n\tERRO DE USO, utilize o Formato de Execução Correto: " << "'make run ENTRADA=" << "<nome do seu arquivo de entrada> " << "VIDEO=" << "<sim ou nao>'\n"; 
+        std::cout << "\n\tExemplo: 'make run ENTRADA=entrada10.txt VIDEO=nao'\n";
+        std::cout << "\n\tLembrando, esse programa possui capacidades gráficas e requer que o usuario crie um arquivo de entrada contendo\n\tos pontos(coordenadas) a serem analisados. Devido ao funcionamento do Makefile, para que o usuário selecione se\n\tdeseja ver a demonstração gráfica e selecione o arquivo de entrada desejado pela linha de comando, ele deve\n\tinserir essas informações após o 'make run', com ENTRADA= e VIDEO= seguindo o formato descrito acima.\n\n";
         return 1;
     }
 
     std::ifstream inputFile(argv[1]);
     if (!inputFile) {
-        std::cout << "Erro ao abir arquivo de entrada.\n";
+        std::cout << "\n\tErro ao abir arquivo de entrada. Lembre-se, ele deve estar localizado na raiz do projeto.\n\n";
         return 1;
     }
 
-    const int maxPontos = 10000;  // Número máximo de
+    bool video;
+    std::string teste = argv[2];
+    if(teste == "sim"){
+        video = true;
+    }
+    else if(teste == "nao"){
+        video = false;
+    }
+    else{
+        std::cout << "\n\tOpção de vídeo inválida. Lembre-se, você só pode inserir 'VIDEO=sim' ou 'VIDEO=nao'.\n\n";
+        return 1;
+    }
+
+    const int maxPontos = 100000;  // Maximum number of pontos
     Ponto pontos[maxPontos];
     int n = 0;
 
@@ -336,51 +310,175 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         if (!(iss >> pontos[n].x >> pontos[n].y)) {
-            std::cout << "Invalid input format.\n";
+            std::cout << "\n\tFormato de entradas do arquivo com formatação errada. As coordenads devem estar dispostas como nas entradas dadas de exemplo pelos professores.\n";
+            std::cout << "\n\tExemplo:\n\t2 3\n\t1 0\n\t23 5\n\t55 100\n\n";
             return 1;
         }
         n++;
     }
 
+    Ponto pontos1[n], pontos2[n], pontos3[n], pontos4[n];
+    for(int i = 0; i < n; i++){
+        pontos1[i] = pontos[i];
+        pontos2[i] = pontos[i];
+        pontos3[i] = pontos[i];
+        pontos4[i] = pontos[i];
+    }
+
     int tamanhoFecho = 0;
-    Ponto* pontosFecho = JarvisFecho(pontos, n, tamanhoFecho);
-    tamanhoFecho = 0;
-    Ponto* GrahamMergeConvexHullPoints = MergeConvexHullGraham(pontos, n, tamanhoFecho);
-    tamanhoFecho = 0;
-    Ponto* GrahamRadixConvexHullPoints = RadixConvexHullGraham(pontos, n, tamanhoFecho);
-    tamanhoFecho = 0;
-    Ponto* GrahamInsertConvexHullPoints = InsertConvexHullGraham(pontos, n, tamanhoFecho);
 
-    std::cout << "Jarvis Convex Hull Points:\n";
+    //Chamando a função do Graham + MergeSort e calculando o tempo para executá-la
+    long double tempoGrahamMerge;
+    auto start2 = std::chrono::high_resolution_clock::now();
+
+    Ponto* GrahamMergeConvexHullPoints = MergeConvexHullGraham(pontos2, n, tamanhoFecho);
+
+    auto end2 = std::chrono::high_resolution_clock::now();
+    tempoGrahamMerge = std::chrono::duration_cast<std::chrono::nanoseconds>(end2 - start2).count();
+
+    //Chamando a função do Graham + InsertionSort e calculando o tempo para executá-la
+    long double tempoGrahamInsert;
+    auto start3 = std::chrono::high_resolution_clock::now();
+
+    Ponto* GrahamInsertConvexHullPoints = InsertConvexHullGraham(pontos3, n, tamanhoFecho);
+
+    auto end3 = std::chrono::high_resolution_clock::now();
+    tempoGrahamInsert = std::chrono::duration_cast<std::chrono::nanoseconds>(end3 - start3).count();
+
+    //Chamando a função do Graham + RadixSort e calculando o tempo para executá-la
+    long double tempoGrahamBucket;
+    auto start4 = std::chrono::high_resolution_clock::now();
+
+    Ponto* GrahamBucketConvexHullPoints = BucketConvexHullGraham(pontos4, n, tamanhoFecho);
+
+    auto end4 = std::chrono::high_resolution_clock::now();
+    tempoGrahamBucket = std::chrono::duration_cast<std::chrono::nanoseconds>(end4 - start4).count();
+
+    //Chamando a função do Jarvis e calculando o tempo para executá-la
+    long double tempoJarvis;
+    auto start1 = std::chrono::high_resolution_clock::now();
+
+    Ponto* JarvisConvexHullPoints = JarvisFecho(pontos1, n, tamanhoFecho);
+
+    auto end1 = std::chrono::high_resolution_clock::now();
+    tempoJarvis = std::chrono::duration_cast<std::chrono::nanoseconds>(end1 - start1).count();
+
+
+    //Realizando a impressão das saídas
+    std::cout << "FECHO CONVEXO\n";
     for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << "(" << pontosFecho[i].x << ", " << pontosFecho[i].y << ")\n";
+        std::cout << JarvisConvexHullPoints[i].x << ' ' << JarvisConvexHullPoints[i].y << std::endl;
     }
 
     std::cout << std::endl;
 
-    std::cout << "Graham + MergeSort Convex Hull Points:\n";
-    for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << "(" << GrahamMergeConvexHullPoints[i].x << ", " << GrahamMergeConvexHullPoints[i].y << ")\n";
+    std::cout << "GRAHAM+MERGESORT: " << tempoGrahamMerge/1000 << "ms" << std::endl;
+    std::cout << "GRAHAM+INSERTIONSORT: " << tempoGrahamInsert/1000 << "ms" << std::endl;
+    std::cout << "GRAHAM+BUCKETSORT: " << tempoGrahamBucket/1000 << "ms" << std::endl;
+    std::cout << "JARVIS: " << tempoJarvis/1000 << "ms" << std::endl;
+
+    //SFML(Biblioteca Gráfica)
+    if(video == true){
+        std::cout << '\n' << "Inicializando Demonstração Gráfica do Algoritmo." << std::endl;
+        std::cout << "Para fechar a demonstração e terminar o programa, simplesmente feche a janela gerada.\n" << std::endl;
+
+        // Create the window
+        sf::RenderWindow window(sf::VideoMode(800, 600), "Polygon Example");
+
+        // Calculate the position to center the window on the screen
+        sf::Vector2i screenCenter(sf::VideoMode::getDesktopMode().width / 2, sf::VideoMode::getDesktopMode().height / 2);
+        sf::Vector2i windowPosition(screenCenter - sf::Vector2i(window.getSize().x / 2, window.getSize().y / 2));
+
+        // Set the position of the window
+        window.setPosition(windowPosition);
+        
+        while (window.isOpen()) {
+            // Process events
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+            }
+
+            // Clear the window
+            window.clear();
+
+            // Draw lines between the points
+            // Calculate the center of the window
+            sf::Vector2f windowCenter(800 / 2.f, 600 / 2.f);
+
+            // Calculate the maximum coordinate distance from the center
+            float maxDistance = 0.f;
+            for (int i = 0; i < tamanhoFecho; ++i) {
+                float distance = std::max(std::abs(JarvisConvexHullPoints[i].x), std::abs(JarvisConvexHullPoints[i].y));
+                maxDistance = std::max(maxDistance, distance);
+            }
+
+            // Scale factor for the coordinates
+            float scaleFactor = std::min(400.f / maxDistance, 300.f / maxDistance);
+
+            // Calculate centroid of the polygon
+            sf::Vector2f centroid(0.0f, 0.0f);
+            for (int i = 0; i < tamanhoFecho; ++i) {
+                centroid.x += JarvisConvexHullPoints[i].x;
+                centroid.y += JarvisConvexHullPoints[i].y;
+            }
+            centroid /= static_cast<float>(tamanhoFecho);
+
+            // Draw all points
+            for (int i = 0; i < n; ++i) {
+                sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((pontos[i].x - centroid.x) * scaleFactor, (pontos[i].y - centroid.y) * scaleFactor);
+
+                // Draw vertex
+                sf::CircleShape vertex(3.0f);
+                vertex.setFillColor(sf::Color::Blue);
+                vertex.setOrigin(1.5f, 1.5f);
+                vertex.setPosition(translatedPoint);
+                window.draw(vertex);
+            }
+
+            // Draw vertices
+            for (int i = 0; i < tamanhoFecho; ++i) {
+                sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[i].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[i].y - centroid.y) * scaleFactor);
+
+                // Draw vertex
+                sf::CircleShape vertex(3.0f);
+                vertex.setFillColor(sf::Color::Green);
+                vertex.setOrigin(1.5f, 1.5f);
+                vertex.setPosition(translatedPoint);
+                window.draw(vertex);
+            }
+
+            sf::sleep(sf::seconds(1.0f));
+
+            // Draw lines
+            for (int i = 0; i < tamanhoFecho; ++i) {
+                sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[i].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[i].y - centroid.y) * scaleFactor);
+                sf::Vector2f nextTranslatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[(i + 1) % tamanhoFecho].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[(i + 1) % tamanhoFecho].y - centroid.y) * scaleFactor);
+
+                // Draw line
+                sf::Vertex line[] = {
+                    sf::Vertex(translatedPoint),
+                    sf::Vertex(nextTranslatedPoint)
+                };
+                line[0].color = sf::Color::Red;
+                line[1].color = sf::Color::Red;
+                window.draw(line, 2, sf::Lines);
+
+                window.display();
+                sf::sleep(sf::seconds(0.5f));
+            }
+
+            // Display the window
+            window.display();
+        }
     }
+    
 
-    std::cout << std::endl;
-
-    std::cout << "Graham + InsertionSort Convex Hull Points:\n";
-    for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << "(" << GrahamInsertConvexHullPoints[i].x << ", " << GrahamInsertConvexHullPoints[i].y << ")\n";
-    }    
-
-    std::cout << std::endl;
-
-    std::cout << "Graham + RadixSort Convex Hull Points:\n";
-    for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << "(" << GrahamRadixConvexHullPoints[i].x << ", " << GrahamRadixConvexHullPoints[i].y << ")\n";
-    }    
-
-    delete[] pontosFecho;
+    delete[] JarvisConvexHullPoints;
     delete[] GrahamMergeConvexHullPoints;
     delete[] GrahamInsertConvexHullPoints;
-    delete[] GrahamRadixConvexHullPoints;
+    delete[] GrahamBucketConvexHullPoints;
 
     return 0;
 }

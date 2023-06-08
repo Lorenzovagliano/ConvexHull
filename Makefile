@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-std=c++11 -Wall
+CFLAGS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 TARGET= ./bin/ConvexHull
 OBJ_DIR = ./obj
@@ -9,19 +9,19 @@ INCLUDE_DIR = ./include
 all: ${TARGET}
 
 ${TARGET}: ${OBJ_DIR}/Ponto.o ${OBJ_DIR}/Reta.o ${OBJ_DIR}/main.o
-	${CC} ${CFLAGS} ${OBJ_DIR}/*.o -o ${TARGET}
+	${CC} ${OBJ_DIR}/*.o -o ${TARGET} ${CFLAGS}
 
 ${OBJ_DIR}/Ponto.o: ${INCLUDE_DIR}/Ponto.hpp ${SRC_DIR}/Ponto.cpp
-	${CC} ${CFLAGS} -I ${INCLUDE_DIR}/ -c ${SRC_DIR}/Ponto.cpp -o ${OBJ_DIR}/Ponto.o
+	${CC} -I ${INCLUDE_DIR}/ -c ${SRC_DIR}/Ponto.cpp -o ${OBJ_DIR}/Ponto.o ${CFLAGS}
 
 ${OBJ_DIR}/Reta.o: ${INCLUDE_DIR}/Ponto.hpp ${INCLUDE_DIR}/Reta.hpp ${SRC_DIR}/Reta.cpp
-	${CC} ${CFLAGS} -I ${INCLUDE_DIR}/ -c ${SRC_DIR}/Reta.cpp -o ${OBJ_DIR}/Reta.o
+	${CC} -I ${INCLUDE_DIR}/ -c ${SRC_DIR}/Reta.cpp -o ${OBJ_DIR}/Reta.o ${CFLAGS}
 
 ${OBJ_DIR}/main.o: ${INCLUDE_DIR}/Ponto.hpp ${INCLUDE_DIR}/Reta.hpp ${SRC_DIR}/main.cpp
-	${CC} ${CFLAGS} -I ${INCLUDE_DIR}/ -c ${SRC_DIR}/main.cpp -o ${OBJ_DIR}/main.o
+	${CC} -I ${INCLUDE_DIR}/ -c ${SRC_DIR}/main.cpp -o ${OBJ_DIR}/main.o ${CFLAGS}
 
 run: all
-	${TARGET} $(ENTRADA)
+	${TARGET} $(ENTRADA) $(VIDEO)
 
 clean:
 	rm -f ${OBJ_DIR}/* ${TARGET}
