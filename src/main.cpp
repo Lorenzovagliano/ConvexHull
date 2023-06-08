@@ -206,30 +206,82 @@ Ponto* InsertConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     return pontosFecho;
 }
 
+void insertionSort2(Ponto* arr, int size) {
+    for (int i = 1; i < size; ++i) {
+        Ponto key = arr[i];
+        int j = i - 1;
 
-void bucketSort(Ponto points[], int n) {
-    const int numBuckets = n;
-    Ponto* buckets = new Ponto[numBuckets];
-    for (int i = 0; i < numBuckets; i++) {
-        buckets[i] = points[0];
+        while (j >= 0 && arr[j].y > key.y) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+
+        arr[j + 1] = key;
     }
-
-    Ponto reference = points[0];
-    for (int i = 1; i < n; i++) {
-        if (compararPontos(points[i], buckets[i], reference)) {
-            reference = points[i];
-        }
-        while (compararPontos(buckets[i], points[i], reference)) {
-            i++;
-        }
-        if (i < n) {
-            std::swap(points[i], buckets[i]);
-        }
-        i--;
-    }
-
-    delete[] buckets;
 }
+
+void bucketSort(Ponto* points, int size) {
+    // Find the minimum and maximum values of x-coordinate
+    int minX = points[0].x;
+    int maxX = points[0].x;
+    for (int i = 1; i < size; ++i) {
+        if (points[i].x < minX) {
+            minX = points[i].x;
+        }
+        if (points[i].x > maxX) {
+            maxX = points[i].x;
+        }
+    }
+
+    // Create buckets based on the range of x-coordinates
+    const int bucketRange = 10; // Adjust the bucket range as per your needs
+    const int numBuckets = (maxX - minX) / bucketRange + 1;
+    int* bucketSizes = new int[numBuckets]();
+    Ponto** buckets = new Ponto*[numBuckets]();
+
+    // Assign points to their respective buckets based on x-coordinate
+    for (int i = 0; i < size; ++i) {
+        int bucketIndex = (points[i].x - minX) / bucketRange;
+        bucketSizes[bucketIndex]++;
+    }
+
+    // Allocate memory for each bucket
+    for (int i = 0; i < numBuckets; ++i) {
+        buckets[i] = new Ponto[bucketSizes[i]];
+    }
+
+    // Reset bucket sizes for reuse
+    for (int i = 0; i < numBuckets; ++i) {
+        bucketSizes[i] = 0;
+    }
+
+    // Assign points to their respective buckets based on x-coordinate
+    for (int i = 0; i < size; ++i) {
+        int bucketIndex = (points[i].x - minX) / bucketRange;
+        buckets[bucketIndex][bucketSizes[bucketIndex]++] = points[i];
+    }
+
+    // Sort points within each bucket using insertion sort
+    for (int i = 0; i < numBuckets; ++i) {
+        insertionSort2(points, size);
+    }
+
+    // Concatenate the sorted buckets
+    int index = 0;
+    for (int i = 0; i < numBuckets; ++i) {
+        for (int j = 0; j < bucketSizes[i]; ++j) {
+            points[index++] = buckets[i][j];
+        }
+    }
+
+    // Deallocate memory
+    for (int i = 0; i < numBuckets; ++i) {
+        delete[] buckets[i];
+    }
+    delete[] buckets;
+    delete[]bucketSizes;
+}
+
 
 Ponto* BucketConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     if (n < 3) {
@@ -311,7 +363,7 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         if (!(iss >> pontos[n].x >> pontos[n].y)) {
-            std::cout << "\n\tFormato de entradas do arquivo com formatação errada. As coordenads devem estar dispostas como nas entradas dadas de exemplo pelos professores.\n";
+            std::cout << "\n\tFormato de entradas do arquivo com formatação errada. Os pontos devem estar dispostos como nas entradas dadas de exemplo pelos professores.\n";
             std::cout << "\n\tExemplo:\n\t2 3\n\t1 0\n\t23 5\n\t55 100\n\n";
             return 1;
         }
@@ -366,16 +418,9 @@ int main(int argc, char* argv[]) {
 
 
     //Realizando a impressão das saídas
-    std::cout << "FECHO CONVEXO\n";
+    std::cout << "FECHO CONVEXO JARVIS\n";
     for (int i = 0; i < tamanhoFecho; i++) {
         std::cout << JarvisConvexHullPoints[i].x << ' ' << JarvisConvexHullPoints[i].y << std::endl;
-    }
-
-    std::cout << std::endl;
-
-    std::cout << "FECHO CONVEXO\n";
-    for (int i = 0; i < tamanhoFecho; i++) {
-        std::cout << GrahamBucketConvexHullPoints[i].x << ' ' << GrahamBucketConvexHullPoints[i].y << std::endl;
     }
 
     std::cout << std::endl;
@@ -390,42 +435,42 @@ int main(int argc, char* argv[]) {
         std::cout << '\n' << "Inicializando Demonstração Gráfica do Algoritmo." << std::endl;
         std::cout << "Para fechar a demonstração e terminar o programa, simplesmente feche a janela gerada.\n" << std::endl;
 
-        // Create the window
-        sf::RenderWindow window(sf::VideoMode(800, 600), "Polygon Example");
+        //Criar Janela
+        sf::RenderWindow window(sf::VideoMode(800, 600), "Fecho Convexo");
 
-        // Calculate the position to center the window on the screen
+        //Calcular posição para centralizar a janela
         sf::Vector2i screenCenter(sf::VideoMode::getDesktopMode().width / 2, sf::VideoMode::getDesktopMode().height / 2);
         sf::Vector2i windowPosition(screenCenter - sf::Vector2i(window.getSize().x / 2, window.getSize().y / 2));
 
-        // Set the position of the window
+        //Setar a posição da janela
         window.setPosition(windowPosition);
         
         while (window.isOpen()) {
-            // Process events
+            //Processar eventos
             sf::Event event;
             while (window.pollEvent(event)) {
-                if (event.type == sf::Event::Closed)
+                if (event.type == sf::Event::Closed){
                     window.close();
+                }
             }
 
-            // Clear the window
+            //Limpar a Janela
             window.clear();
 
-            // Draw lines between the pontos
-            // Calculate the center of the window
+            //Calcular centro da janela
             sf::Vector2f windowCenter(800 / 2.f, 600 / 2.f);
 
-            // Calculate the maximum coordinate distance from the center
+            //Calcular distância máxima permitida do centro
             float maxDistance = 0.f;
             for (int i = 0; i < tamanhoFecho; ++i) {
                 float distance = std::max(std::abs(JarvisConvexHullPoints[i].x), std::abs(JarvisConvexHullPoints[i].y));
                 maxDistance = std::max(maxDistance, distance);
             }
 
-            // Scale factor for the coordinates
+            //Fator de escala para as coordenadas
             float scaleFactor = std::min(400.f / maxDistance, 300.f / maxDistance);
 
-            // Calculate centroid of the polygon
+            //Calcular centro do Polígono
             sf::Vector2f centroid(0.0f, 0.0f);
             for (int i = 0; i < tamanhoFecho; ++i) {
                 centroid.x += JarvisConvexHullPoints[i].x;
@@ -433,23 +478,23 @@ int main(int argc, char* argv[]) {
             }
             centroid /= static_cast<float>(tamanhoFecho);
 
-            // Draw all pontos
+            //Desenhar todos os pontos em Azul
             for (int i = 0; i < n; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((pontos[i].x - centroid.x) * scaleFactor, (pontos[i].y - centroid.y) * scaleFactor);
 
-                // Draw vertex
-                sf::CircleShape vertex(3.0f);
+                //Desenhar vertex
+                sf::CircleShape vertex(2.0f);
                 vertex.setFillColor(sf::Color::Blue);
                 vertex.setOrigin(1.5f, 1.5f);
                 vertex.setPosition(translatedPoint);
                 window.draw(vertex);
             }
 
-            // Draw vertices
+            //Desenhar vértices em Verde
             for (int i = 0; i < tamanhoFecho; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[i].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[i].y - centroid.y) * scaleFactor);
 
-                // Draw vertex
+                //Desenhar vertex
                 sf::CircleShape vertex(3.0f);
                 vertex.setFillColor(sf::Color::Green);
                 vertex.setOrigin(1.5f, 1.5f);
@@ -459,12 +504,12 @@ int main(int argc, char* argv[]) {
 
             sf::sleep(sf::seconds(1.0f));
 
-            // Draw lines
+            //Desenhar Linhas em Vermelho
             for (int i = 0; i < tamanhoFecho; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[i].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[i].y - centroid.y) * scaleFactor);
                 sf::Vector2f nextTranslatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[(i + 1) % tamanhoFecho].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[(i + 1) % tamanhoFecho].y - centroid.y) * scaleFactor);
 
-                // Draw line
+                //Desenhar linha
                 sf::Vertex line[] = {
                     sf::Vertex(translatedPoint),
                     sf::Vertex(nextTranslatedPoint)
@@ -477,7 +522,7 @@ int main(int argc, char* argv[]) {
                 sf::sleep(sf::seconds(0.5f));
             }
 
-            // Display the window
+            //Mostrar Janela
             window.display();
         }
     }
