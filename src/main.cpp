@@ -3,6 +3,7 @@
 #include <sstream>
 #include <chrono>
 #include <string>
+#include <cmath>
 
 #include <SFML/Graphics.hpp>
 #include "Ponto.hpp"
@@ -205,6 +206,7 @@ Ponto* InsertConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     return pontosFecho;
 }
 
+
 void bucketSort(Ponto points[], int n) {
     const int numBuckets = n;
     Ponto* buckets = new Ponto[numBuckets];
@@ -246,7 +248,7 @@ Ponto* BucketConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     pontos[0] = pontos[menorIndice];
     pontos[menorIndice] = temp;
 
-    bucketSort(pontos + 1, n - 1);
+    bucketSort(pontos + 1, n);
 
     Ponto* pontosFecho = new Ponto[n];
     tamanhoFecho = 0;
@@ -371,6 +373,13 @@ int main(int argc, char* argv[]) {
 
     std::cout << std::endl;
 
+    std::cout << "FECHO CONVEXO\n";
+    for (int i = 0; i < tamanhoFecho; i++) {
+        std::cout << GrahamBucketConvexHullPoints[i].x << ' ' << GrahamBucketConvexHullPoints[i].y << std::endl;
+    }
+
+    std::cout << std::endl;
+
     std::cout << "GRAHAM+MERGESORT: " << tempoGrahamMerge/1000 << "ms" << std::endl;
     std::cout << "GRAHAM+INSERTIONSORT: " << tempoGrahamInsert/1000 << "ms" << std::endl;
     std::cout << "GRAHAM+BUCKETSORT: " << tempoGrahamBucket/1000 << "ms" << std::endl;
@@ -402,7 +411,7 @@ int main(int argc, char* argv[]) {
             // Clear the window
             window.clear();
 
-            // Draw lines between the points
+            // Draw lines between the pontos
             // Calculate the center of the window
             sf::Vector2f windowCenter(800 / 2.f, 600 / 2.f);
 
@@ -424,7 +433,7 @@ int main(int argc, char* argv[]) {
             }
             centroid /= static_cast<float>(tamanhoFecho);
 
-            // Draw all points
+            // Draw all pontos
             for (int i = 0; i < n; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((pontos[i].x - centroid.x) * scaleFactor, (pontos[i].y - centroid.y) * scaleFactor);
 
