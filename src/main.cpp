@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 #include "Ponto.hpp"
 
-int produtoVetorial3(const Ponto& A, const Ponto& B, const Ponto& C) {
+long int produtoVetorial3(const Ponto& A, const Ponto& B, const Ponto& C) {
     return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
 }
 
@@ -16,19 +16,19 @@ bool isEsquerda(const Ponto& A, const Ponto& B, const Ponto& P) {
     return produtoVetorial3(A, B, P) > 0;
 }
 
-Ponto* JarvisFecho(Ponto pontos[], int n, int& tamanhoFecho) {
+Ponto* JarvisFecho(Ponto pontos[], long int n, long int& tamanhoFecho) {
     if (n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
     }
 
-    int maisEsquerda = 0;
-    for (int i = 1; i < n; i++) {
+    long int maisEsquerda = 0;
+    for (long int i = 1; i < n; i++) {
         if (pontos[i].x < pontos[maisEsquerda].x)
             maisEsquerda = i;
     }
 
-    int p = maisEsquerda, q;
+    long int p = maisEsquerda, q;
     tamanhoFecho = 0;
 
     Ponto* pontosFecho = new Ponto[n];
@@ -37,7 +37,7 @@ Ponto* JarvisFecho(Ponto pontos[], int n, int& tamanhoFecho) {
         pontosFecho[tamanhoFecho++] = pontos[p];
         q = (p + 1) % n;
 
-        for (int i = 0; i < n; i++) {
+        for (long int i = 0; i < n; i++) {
             if (isEsquerda(pontos[p], pontos[i], pontos[q]))
                 q = i;
         }
@@ -48,33 +48,33 @@ Ponto* JarvisFecho(Ponto pontos[], int n, int& tamanhoFecho) {
     return pontosFecho;
 }
 
-int distanciaEuclidiana(const Ponto& A, const Ponto& B) {
-    int dx = B.x - A.x;
-    int dy = B.y - A.y;
+long int distanciaEuclidiana(const Ponto& A, const Ponto& B) {
+    long int dx = B.x - A.x;
+    long int dy = B.y - A.y;
     return dx * dx + dy * dy;
 }
 
 bool compararPontos(const Ponto& A, const Ponto& B, const Ponto& reference) {
-    int produtoVetorial = (A.x - reference.x) * (B.y - reference.y) - (B.x - reference.x) * (A.y - reference.y);
+    long int produtoVetorial = (A.x - reference.x) * (B.y - reference.y) - (B.x - reference.x) * (A.y - reference.y);
     if (produtoVetorial == 0) {
         return distanciaEuclidiana(A, reference) < distanciaEuclidiana(B, reference);
     }
     return produtoVetorial > 0;
 }
 
-void merge(Ponto pontos[], int esquerda, int meio, int direita, const Ponto& reference) {
-    int n1 = meio - esquerda + 1;
-    int n2 = direita - meio;
+void merge(Ponto pontos[], long int esquerda, long int meio, long int direita, const Ponto& reference) {
+    long int n1 = meio - esquerda + 1;
+    long int n2 = direita - meio;
 
     Ponto* arrEsq = new Ponto[n1];
     Ponto* arrDir = new Ponto[n2];
 
-    for (int i = 0; i < n1; i++)
+    for (long int i = 0; i < n1; i++)
         arrEsq[i] = pontos[esquerda + i];
-    for (int j = 0; j < n2; j++)
+    for (long int j = 0; j < n2; j++)
         arrDir[j] = pontos[meio + 1 + j];
 
-    int i = 0, j = 0, k = esquerda;
+    long int i = 0, j = 0, k = esquerda;
 
     while (i < n1 && j < n2) {
         if (compararPontos(arrEsq[i], arrDir[j], reference)) {
@@ -106,23 +106,23 @@ void merge(Ponto pontos[], int esquerda, int meio, int direita, const Ponto& ref
     delete[] arrDir;
 }
 
-void mergeSort(Ponto pontos[], int esquerda, int direita, const Ponto& reference) {
+void mergeSort(Ponto pontos[], long int esquerda, long int direita, const Ponto& reference) {
     if (esquerda < direita) {
-        int meio = esquerda + (direita - esquerda) / 2;
+        long int meio = esquerda + (direita - esquerda) / 2;
         mergeSort(pontos, esquerda, meio, reference);
         mergeSort(pontos, meio + 1, direita, reference);
         merge(pontos, esquerda, meio, direita, reference);
     }
 }
 
-Ponto* MergeConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
+Ponto* MergeConvexHullGraham(Ponto pontos[], long int n, long int& tamanhoFecho) {
     if (n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
     }
 
-    int menorIndice = 0;
-    for (int i = 1; i < n; i++) {
+    long int menorIndice = 0;
+    for (long int i = 1; i < n; i++) {
         if (pontos[i].y < pontos[menorIndice].y || (pontos[i].y == pontos[menorIndice].y && pontos[i].x < pontos[menorIndice].x)) {
             menorIndice = i;
         }
@@ -143,7 +143,7 @@ Ponto* MergeConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     pontosFecho[tamanhoFecho] = pontos[1];
     tamanhoFecho++;
 
-    for (int i = 2; i < n; i++) {
+    for (long int i = 2; i < n; i++) {
         while (tamanhoFecho > 1 && !compararPontos(pontosFecho[tamanhoFecho - 2], pontosFecho[tamanhoFecho - 1], pontos[i]))
             tamanhoFecho--;
 
@@ -154,10 +154,10 @@ Ponto* MergeConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     return pontosFecho;
 }
 
-void insertionSort(Ponto pontos[], int n, const Ponto& reference) {
-    for (int i = 1; i < n; i++) {
+void insertionSort(Ponto pontos[], long int n, const Ponto& reference) {
+    for (long int i = 1; i < n; i++) {
         Ponto chave = pontos[i];
-        int j = i - 1;
+        long int j = i - 1;
         while (j >= 0 && !compararPontos(pontos[j], chave, reference)) {
             pontos[j + 1] = pontos[j];
             j--;
@@ -166,14 +166,14 @@ void insertionSort(Ponto pontos[], int n, const Ponto& reference) {
     }
 }
 
-Ponto* InsertConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
+Ponto* InsertConvexHullGraham(Ponto pontos[], long int n, long int& tamanhoFecho) {
     if (n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
     }
 
-    int menorIndice = 0;
-    for (int i = 1; i < n; i++) {
+    long int menorIndice = 0;
+    for (long int i = 1; i < n; i++) {
         if (pontos[i].y < pontos[menorIndice].y || (pontos[i].y == pontos[menorIndice].y && pontos[i].x < pontos[menorIndice].x)) {
             menorIndice = i;
         }
@@ -194,7 +194,7 @@ Ponto* InsertConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     pontosFecho[tamanhoFecho] = pontos[1];
     tamanhoFecho++;
 
-    for (int i = 2; i < n; i++) {
+    for (long int i = 2; i < n; i++) {
         while (tamanhoFecho > 1 && !compararPontos(pontosFecho[tamanhoFecho - 2], pontosFecho[tamanhoFecho - 1], pontos[i])) {
             tamanhoFecho--;
         }
@@ -206,10 +206,10 @@ Ponto* InsertConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     return pontosFecho;
 }
 
-void insertionSort2(Ponto* arr, int size) {
-    for (int i = 1; i < size; ++i) {
+void insertionSort2(Ponto* arr, long int size) {
+    for (long int i = 1; i < size; ++i) {
         Ponto key = arr[i];
-        int j = i - 1;
+        long int j = i - 1;
 
         while (j >= 0 && arr[j].y > key.y) {
             arr[j + 1] = arr[j];
@@ -220,11 +220,11 @@ void insertionSort2(Ponto* arr, int size) {
     }
 }
 
-void bucketSort(Ponto* points, int size) {
+void bucketSort(Ponto* points, long int size) {
     // Find the minimum and maximum values of x-coordinate
-    int minX = points[0].x;
-    int maxX = points[0].x;
-    for (int i = 1; i < size; ++i) {
+    long int minX = points[0].x;
+    long int maxX = points[0].x;
+    for (long int i = 1; i < size; ++i) {
         if (points[i].x < minX) {
             minX = points[i].x;
         }
@@ -234,48 +234,48 @@ void bucketSort(Ponto* points, int size) {
     }
 
     // Create buckets based on the range of x-coordinates
-    const int bucketRange = 10; // Adjust the bucket range as per your needs
-    const int numBuckets = (maxX - minX) / bucketRange + 1;
-    int* bucketSizes = new int[numBuckets]();
+    const long int bucketRange = 10; // Adjust the bucket range as per your needs
+    const long int numBuckets = (maxX - minX) / bucketRange + 1;
+    long int* bucketSizes = new long int[numBuckets]();
     Ponto** buckets = new Ponto*[numBuckets]();
 
     // Assign points to their respective buckets based on x-coordinate
-    for (int i = 0; i < size; ++i) {
-        int bucketIndex = (points[i].x - minX) / bucketRange;
+    for (long int i = 0; i < size; ++i) {
+        long int bucketIndex = (points[i].x - minX) / bucketRange;
         bucketSizes[bucketIndex]++;
     }
 
     // Allocate memory for each bucket
-    for (int i = 0; i < numBuckets; ++i) {
+    for (long int i = 0; i < numBuckets; ++i) {
         buckets[i] = new Ponto[bucketSizes[i]];
     }
 
     // Reset bucket sizes for reuse
-    for (int i = 0; i < numBuckets; ++i) {
+    for (long int i = 0; i < numBuckets; ++i) {
         bucketSizes[i] = 0;
     }
 
     // Assign points to their respective buckets based on x-coordinate
-    for (int i = 0; i < size; ++i) {
-        int bucketIndex = (points[i].x - minX) / bucketRange;
+    for (long int i = 0; i < size; ++i) {
+        long int bucketIndex = (points[i].x - minX) / bucketRange;
         buckets[bucketIndex][bucketSizes[bucketIndex]++] = points[i];
     }
 
     // Sort points within each bucket using insertion sort
-    for (int i = 0; i < numBuckets; ++i) {
+    for (long int i = 0; i < numBuckets; ++i) {
         insertionSort2(points, size);
     }
 
     // Concatenate the sorted buckets
-    int index = 0;
-    for (int i = 0; i < numBuckets; ++i) {
-        for (int j = 0; j < bucketSizes[i]; ++j) {
+    long int index = 0;
+    for (long int i = 0; i < numBuckets; ++i) {
+        for (long int j = 0; j < bucketSizes[i]; ++j) {
             points[index++] = buckets[i][j];
         }
     }
 
     // Deallocate memory
-    for (int i = 0; i < numBuckets; ++i) {
+    for (long int i = 0; i < numBuckets; ++i) {
         delete[] buckets[i];
     }
     delete[] buckets;
@@ -283,14 +283,14 @@ void bucketSort(Ponto* points, int size) {
 }
 
 
-Ponto* BucketConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
+Ponto* BucketConvexHullGraham(Ponto pontos[], long int n, long int& tamanhoFecho) {
     if (n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
     }
 
-    int menorIndice = 0;
-    for (int i = 1; i < n; i++) {
+    long int menorIndice = 0;
+    for (long int i = 1; i < n; i++) {
         if (pontos[i].y < pontos[menorIndice].y || (pontos[i].y == pontos[menorIndice].y && pontos[i].x < pontos[menorIndice].x)) {
             menorIndice = i;
         }
@@ -311,7 +311,7 @@ Ponto* BucketConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
     pontosFecho[tamanhoFecho] = pontos[1];
     tamanhoFecho++;
 
-    for (int i = 2; i < n; i++) {
+    for (long int i = 2; i < n; i++) {
         while (tamanhoFecho > 1 && !compararPontos(pontosFecho[tamanhoFecho - 2], pontosFecho[tamanhoFecho - 1], pontos[i])) {
             tamanhoFecho--;
         }
@@ -324,7 +324,7 @@ Ponto* BucketConvexHullGraham(Ponto pontos[], int n, int& tamanhoFecho) {
 }
 
 
-int main(int argc, char* argv[]) {
+int main(long int argc, char* argv[]) {
     if (argc != 3) {
         std::cout << "\n\tERRO DE USO, utilize o Formato de Execução Correto: " << "'make run ENTRADA=" << "<nome do seu arquivo de entrada> " << "VIDEO=" << "<sim ou nao>'\n"; 
         std::cout << "\n\tExemplo: 'make run ENTRADA=entrada10.txt VIDEO=nao'\n";
@@ -351,9 +351,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    const int maxPontos = 100000;  // Maximum number of pontos
+    const long int maxPontos = 100000;  // Maximum number of pontos
     Ponto pontos[maxPontos];
-    int n = 0;
+    long int n = 0;
 
     std::string line;
     while (std::getline(inputFile, line)) {
@@ -371,14 +371,14 @@ int main(int argc, char* argv[]) {
     }
 
     Ponto pontos1[n], pontos2[n], pontos3[n], pontos4[n];
-    for(int i = 0; i < n; i++){
+    for(long int i = 0; i < n; i++){
         pontos1[i] = pontos[i];
         pontos2[i] = pontos[i];
         pontos3[i] = pontos[i];
         pontos4[i] = pontos[i];
     }
 
-    int tamanhoFecho = 0;
+    long int tamanhoFecho = 0;
 
     //Chamando a função do Graham + MergeSort e calculando o tempo para executá-la
     long double tempoGrahamMerge;
@@ -419,7 +419,7 @@ int main(int argc, char* argv[]) {
 
     //Realizando a impressão das saídas
     std::cout << "FECHO CONVEXO JARVIS\n";
-    for (int i = 0; i < tamanhoFecho; i++) {
+    for (long int i = 0; i < tamanhoFecho; i++) {
         std::cout << JarvisConvexHullPoints[i].x << ' ' << JarvisConvexHullPoints[i].y << std::endl;
     }
 
@@ -462,7 +462,7 @@ int main(int argc, char* argv[]) {
 
             //Calcular distância máxima permitida do centro
             float maxDistance = 0.f;
-            for (int i = 0; i < tamanhoFecho; ++i) {
+            for (long int i = 0; i < tamanhoFecho; ++i) {
                 float distance = std::max(std::abs(JarvisConvexHullPoints[i].x), std::abs(JarvisConvexHullPoints[i].y));
                 maxDistance = std::max(maxDistance, distance);
             }
@@ -472,14 +472,14 @@ int main(int argc, char* argv[]) {
 
             //Calcular centro do Polígono
             sf::Vector2f centroid(0.0f, 0.0f);
-            for (int i = 0; i < tamanhoFecho; ++i) {
+            for (long int i = 0; i < tamanhoFecho; ++i) {
                 centroid.x += JarvisConvexHullPoints[i].x;
                 centroid.y += JarvisConvexHullPoints[i].y;
             }
             centroid /= static_cast<float>(tamanhoFecho);
 
             //Desenhar todos os pontos em Azul
-            for (int i = 0; i < n; ++i) {
+            for (long int i = 0; i < n; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((pontos[i].x - centroid.x) * scaleFactor, (pontos[i].y - centroid.y) * scaleFactor);
 
                 //Desenhar vertex
@@ -491,7 +491,7 @@ int main(int argc, char* argv[]) {
             }
 
             //Desenhar vértices em Verde
-            for (int i = 0; i < tamanhoFecho; ++i) {
+            for (long int i = 0; i < tamanhoFecho; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[i].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[i].y - centroid.y) * scaleFactor);
 
                 //Desenhar vertex
@@ -505,7 +505,7 @@ int main(int argc, char* argv[]) {
             sf::sleep(sf::seconds(1.0f));
 
             //Desenhar Linhas em Vermelho
-            for (int i = 0; i < tamanhoFecho; ++i) {
+            for (long int i = 0; i < tamanhoFecho; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[i].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[i].y - centroid.y) * scaleFactor);
                 sf::Vector2f nextTranslatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[(i + 1) % tamanhoFecho].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[(i + 1) % tamanhoFecho].y - centroid.y) * scaleFactor);
 
