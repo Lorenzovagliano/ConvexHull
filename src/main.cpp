@@ -425,15 +425,16 @@ int main(long int argc, char* argv[]) {
 
     std::cout << std::endl;
 
-    std::cout << "GRAHAM+MERGESORT: " << tempoGrahamMerge/1000 << "ms" << std::endl;
-    std::cout << "GRAHAM+INSERTIONSORT: " << tempoGrahamInsert/1000 << "ms" << std::endl;
-    std::cout << "GRAHAM+BUCKETSORT: " << tempoGrahamBucket/1000 << "ms" << std::endl;
-    std::cout << "JARVIS: " << tempoJarvis/1000 << "ms" << std::endl;
+    std::cout << "GRAHAM+MERGESORT: " << tempoGrahamMerge/1000000000 << "s" << std::endl;
+    std::cout << "GRAHAM+INSERTIONSORT: " << tempoGrahamInsert/1000000000 << "s" << std::endl;
+    std::cout << "GRAHAM+BUCKETSORT: " << tempoGrahamBucket/1000000000 << "s" << std::endl;
+    std::cout << "JARVIS: " << tempoJarvis/1000000000 << "s" << std::endl;
 
     //SFML(Biblioteca Gráfica)
     if(video == true){
         std::cout << '\n' << "Inicializando Demonstração Gráfica do Algoritmo." << std::endl;
-        std::cout << "Para fechar a demonstração e terminar o programa, simplesmente feche a janela gerada.\n" << std::endl;
+        std::cout << "Para fechar a demonstração e terminar o programa, simplesmente feche a janela gerada. Após clicar no X, a janela ainda pode demorar um tempo para ser fechada.\n";
+        std::cout << "A depender da máquina, um SegFault pode ocorrer ao fechar a janela. Porém, isso é natural.\n\n";
 
         //Criar Janela
         sf::RenderWindow window(sf::VideoMode(800, 600), "Fecho Convexo");
@@ -483,7 +484,7 @@ int main(long int argc, char* argv[]) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((pontos[i].x - centroid.x) * scaleFactor, (pontos[i].y - centroid.y) * scaleFactor);
 
                 //Desenhar vertex
-                sf::CircleShape vertex(2.0f);
+                sf::CircleShape vertex(2.5f);
                 vertex.setFillColor(sf::Color::Blue);
                 vertex.setOrigin(1.5f, 1.5f);
                 vertex.setPosition(translatedPoint);
