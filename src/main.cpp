@@ -233,40 +233,33 @@ void bucketSort(Ponto* points, long int size) {
         }
     }
 
-    // Create buckets based on the range of x-coordinates
-    const long int bucketRange = 10; // Adjust the bucket range as per your needs
+    const long int bucketRange = 10;
     const long int numBuckets = (maxX - minX) / bucketRange + 1;
     long int* bucketSizes = new long int[numBuckets]();
     Ponto** buckets = new Ponto*[numBuckets]();
 
-    // Assign points to their respective buckets based on x-coordinate
     for (long int i = 0; i < size; ++i) {
         long int bucketIndex = (points[i].x - minX) / bucketRange;
         bucketSizes[bucketIndex]++;
     }
 
-    // Allocate memory for each bucket
     for (long int i = 0; i < numBuckets; ++i) {
         buckets[i] = new Ponto[bucketSizes[i]];
     }
 
-    // Reset bucket sizes for reuse
     for (long int i = 0; i < numBuckets; ++i) {
         bucketSizes[i] = 0;
     }
 
-    // Assign points to their respective buckets based on x-coordinate
     for (long int i = 0; i < size; ++i) {
         long int bucketIndex = (points[i].x - minX) / bucketRange;
         buckets[bucketIndex][bucketSizes[bucketIndex]++] = points[i];
     }
 
-    // Sort points within each bucket using insertion sort
     for (long int i = 0; i < numBuckets; ++i) {
         insertionSort2(points, size);
     }
 
-    // Concatenate the sorted buckets
     long int index = 0;
     for (long int i = 0; i < numBuckets; ++i) {
         for (long int j = 0; j < bucketSizes[i]; ++j) {
@@ -274,7 +267,6 @@ void bucketSort(Ponto* points, long int size) {
         }
     }
 
-    // Deallocate memory
     for (long int i = 0; i < numBuckets; ++i) {
         delete[] buckets[i];
     }
@@ -502,8 +494,6 @@ int main(long int argc, char* argv[]) {
                 vertex.setPosition(translatedPoint);
                 window.draw(vertex);
             }
-
-            sf::sleep(sf::seconds(1.0f));
 
             //Desenhar Linhas em Vermelho
             for (long int i = 0; i < tamanhoFecho; ++i) {
