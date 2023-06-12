@@ -12,9 +12,10 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
-        std::cout << "\n\tERRO DE USO, utilize o Formato de Execução Correto: " << "'make run ENTRADA=" << "<nome do seu arquivo de entrada> " << "VIDEO=" << "<sim ou nao>'\n"; 
+        std::cout << "\n\tERRO DE USO, utilize o Formato de Execução Correto: \n" << "\t'make run ENTRADA=<nome do seu arquivo de entrada> VIDEO=<sim ou nao>'\n"; 
         std::cout << "\n\tExemplo: 'make run ENTRADA=entrada10.txt VIDEO=nao'\n";
-        std::cout << "\n\tLembrando, esse programa possui capacidades gráficas e requer que o usuario crie um arquivo de entrada contendo\n\tos pontos(coordenadas) a serem analisados. Devido ao funcionamento do Makefile, para que o usuário selecione se\n\tdeseja ver a demonstração gráfica e selecione o arquivo de entrada desejado pela linha de comando, ele deve\n\tinserir essas informações após o 'make run', com ENTRADA= e VIDEO= seguindo o formato descrito acima.\n\n";
+        std::cout << "\n\tLembrando, esse programa possui capacidades gráficas e requer que o usuario crie um arquivo de entrada contendo\n\tos pontos(coordenadas) a serem analisados. Devido ao funcionamento do Makefile, para que o usuário selecione se\n\tdeseja ver a demonstração gráfica e selecione o arquivo de entrada desejado pela linha de comando, ele deve\n\tinserir essas informações após o 'make run', com ENTRADA= e VIDEO= seguindo o formato descrito acima.\n";
+        std::cout << "\n\tAviso: A demonstração gráfica pode ser lenta a depender da sua máquina.\n\n";
         return 1;
     }
 
@@ -107,7 +108,7 @@ int main(int argc, char* argv[]) {
 
 
     //Realizando a impressão das saídas
-    std::cout << "FECHO CONVEXO JARVIS\n";
+    std::cout << "FECHO CONVEXO\n";
     for (int i = 0; i < fecho.tamanho; i++) {
         std::cout << JarvisConvexHullPoints[i].x << ' ' << JarvisConvexHullPoints[i].y << std::endl;
     }
@@ -121,9 +122,9 @@ int main(int argc, char* argv[]) {
 
     //SFML(Biblioteca Gráfica)
     if(video == true){
-        std::cout << '\n' << "Inicializando Demonstração Gráfica do Algoritmo." << std::endl;
-        std::cout << "Para fechar a demonstração e terminar o programa, simplesmente feche a janela gerada. Após clicar no X, a janela ainda pode demorar um tempo para ser fechada.\n";
-        std::cout << "A depender da máquina, um SegFault pode ocorrer ao fechar a janela. Porém, isso é natural.\n\n";
+        std::cout << "\nInicializando Demonstração Gráfica do Algoritmo. Isso pode demorar a depender da sua máquina\n";
+        std::cout << "\nPara fechar a demonstração e terminar o programa, simplesmente feche a janela gerada. Após clicar no X, a janela ainda pode demorar um tempo para ser fechada.\n";
+        std::cout << "\nA depender da máquina, um SegFault pode ocorrer ao fechar a janela. Porém, isso é natural.\n\n";
 
         //Criar Janela
         sf::RenderWindow window(sf::VideoMode(800, 600), "Fecho Convexo");
