@@ -330,7 +330,7 @@ int* generateRandomArray(int size) {
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 10000);
+    std::uniform_int_distribution<> dis(0, 100000);
 
     for(int i = 0; i < size; i++){
         arr[i] = dis(gen);
@@ -341,36 +341,36 @@ int* generateRandomArray(int size) {
 }
 
 int main(){
-    int *arr1 = generateRandomArray(100000);
-    int *arr2 = generateRandomArray(100000);
+    int *arr1 = generateRandomArray(10000);
+    int *arr2 = generateRandomArray(10000);
 
     /*for(int i = 0; i < 100000; i++){
         std::cout << arr1[i] << ' ' << arr2[i] << std::endl;
     }*/
 
-    Ponto pontos[100000];
+    Ponto pontos[10000];
 
-    for(int i = 0; i < 100000; i+=100){
+    for(int i = 0; i < 10000; i+=1){
         for(int j = 0; j < i; j++){
             pontos[j] = Ponto(arr1[j], arr2[j]);
         }
         for(int j = 0; j < i; j++){
-            //std::cout << pontos[j].x << ' ' << pontos[j].y << std::endl;
+            std::cout << pontos[j].x << ' ' << pontos[j].y << std::endl;
         }
 
         long int tamanhoFecho = 0;
         long double tempoGrahamMerge;
         auto start = std::chrono::high_resolution_clock::now();
         
-        Ponto* fecho = JarvisFecho(pontos, i, tamanhoFecho);
+        //Ponto* fecho = JarvisFecho(pontos, i, tamanhoFecho);
 
         auto end = std::chrono::high_resolution_clock::now();
         tempoGrahamMerge = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 
         //std::cout << i << std::endl;
-        std::cout << tempoGrahamMerge/1000 << std::endl;
+        //std::cout << tempoGrahamMerge/1000 << std::endl;
 
-        delete[] fecho;
+        //delete[] fecho;
     }
 
     delete[] arr1;

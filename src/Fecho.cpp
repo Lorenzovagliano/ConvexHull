@@ -1,6 +1,6 @@
 #include "Fecho.hpp"
 
-long int produtoVetorial3(const Ponto& A, const Ponto& B, const Ponto& C) {
+int produtoVetorial3(const Ponto& A, const Ponto& B, const Ponto& C) {
     return (B.x - A.x) * (C.y - A.y) - (B.y - A.y) * (C.x - A.x);
 }
 
@@ -8,33 +8,33 @@ bool isEsquerda(const Ponto& A, const Ponto& B, const Ponto& P) {
     return produtoVetorial3(A, B, P) > 0;
 }
 
-long int distanciaEuclidiana(const Ponto& A, const Ponto& B) {
-    long int dx = B.x - A.x;
-    long int dy = B.y - A.y;
+int distanciaEuclidiana(const Ponto& A, const Ponto& B) {
+    int dx = B.x - A.x;
+    int dy = B.y - A.y;
     return dx * dx + dy * dy;
 }
 
 bool compararPontos(const Ponto& A, const Ponto& B, const Ponto& reference) {
-    long int produtoVetorial = (A.x - reference.x) * (B.y - reference.y) - (B.x - reference.x) * (A.y - reference.y);
+    int produtoVetorial = (A.x - reference.x) * (B.y - reference.y) - (B.x - reference.x) * (A.y - reference.y);
     if (produtoVetorial == 0) {
         return distanciaEuclidiana(A, reference) < distanciaEuclidiana(B, reference);
     }
     return produtoVetorial > 0;
 }
 
-void merge(Ponto pontos[], long int esquerda, long int meio, long int direita, const Ponto& reference) {
-    long int n1 = meio - esquerda + 1;
-    long int n2 = direita - meio;
+void merge(Ponto pontos[], int esquerda, int meio, int direita, const Ponto& reference) {
+    int n1 = meio - esquerda + 1;
+    int n2 = direita - meio;
 
     Ponto* arrEsq = new Ponto[n1];
     Ponto* arrDir = new Ponto[n2];
 
-    for (long int i = 0; i < n1; i++)
+    for (int i = 0; i < n1; i++)
         arrEsq[i] = pontos[esquerda + i];
-    for (long int j = 0; j < n2; j++)
+    for (int j = 0; j < n2; j++)
         arrDir[j] = pontos[meio + 1 + j];
 
-    long int i = 0, j = 0, k = esquerda;
+    int i = 0, j = 0, k = esquerda;
 
     while (i < n1 && j < n2) {
         if (compararPontos(arrEsq[i], arrDir[j], reference)) {
@@ -66,19 +66,19 @@ void merge(Ponto pontos[], long int esquerda, long int meio, long int direita, c
     delete[] arrDir;
 }
 
-void mergeSort(Ponto pontos[], long int esquerda, long int direita, const Ponto& reference) {
+void mergeSort(Ponto pontos[], int esquerda, int direita, const Ponto& reference) {
     if (esquerda < direita) {
-        long int meio = esquerda + (direita - esquerda) / 2;
+        int meio = esquerda + (direita - esquerda) / 2;
         mergeSort(pontos, esquerda, meio, reference);
         mergeSort(pontos, meio + 1, direita, reference);
         merge(pontos, esquerda, meio, direita, reference);
     }
 }
 
-void insertionSort(Ponto pontos[], long int n, const Ponto& reference) {
-    for (long int i = 1; i < n; i++) {
+void insertionSort(Ponto pontos[], int n, const Ponto& reference) {
+    for (int i = 1; i < n; i++) {
         Ponto chave = pontos[i];
-        long int j = i - 1;
+        int j = i - 1;
         while (j >= 0 && !compararPontos(pontos[j], chave, reference)) {
             pontos[j + 1] = pontos[j];
             j--;
@@ -87,72 +87,57 @@ void insertionSort(Ponto pontos[], long int n, const Ponto& reference) {
     }
 }
 
-void insertionSort2(Ponto* arr, long int size) {
-    for (long int i = 1; i < size; ++i) {
-        Ponto key = arr[i];
-        long int j = i - 1;
+void insertionSort2(Ponto* points, int size) {
+    for (int i = 1; i < size; ++i) {
+        Ponto key = points[i];
+        int j = i - 1;
 
-        while (j >= 0 && arr[j].y > key.y) {
-            arr[j + 1] = arr[j];
+        while (j >= 0 && points[j].y > key.y) {
+            points[j + 1] = points[j];
             j--;
         }
 
-        arr[j + 1] = key;
+        points[j + 1] = key;
     }
 }
 
-void bucketSort(Ponto* points, long int size) {
-    // Find the minimum and maximum values of x-coordinate
-    long int minX = points[0].x;
-    long int maxX = points[0].x;
-    for (long int i = 1; i < size; ++i) {
-        if (points[i].x < minX) {
-            minX = points[i].x;
-        }
-        if (points[i].x > maxX) {
-            maxX = points[i].x;
+void bucketSort(Ponto* points, int n) {
+    const int numBuckets = sqrt(n);
+
+    int max = points[0].x;
+    for (int i = 1; i < n; i++) {
+        if (points[i].x > max) {
+            max = points[i].x;
         }
     }
 
-    const long int bucketRange = 10;
-    const long int numBuckets = (maxX - minX) / bucketRange + 1;
-    long int* bucketSizes = new long int[numBuckets]();
-    Ponto** buckets = new Ponto*[numBuckets]();
+    int buckets[numBuckets][n];
+    int bucketSize[numBuckets] = {0};
 
-    for (long int i = 0; i < size; ++i) {
-        long int bucketIndex = (points[i].x - minX) / bucketRange;
-        bucketSizes[bucketIndex]++;
+    for (int i = 0; i < n; i++) {
+        int bucketIndex = (numBuckets * points[i].x) / (max + 1);
+        buckets[bucketIndex][bucketSize[bucketIndex]] = points[i].x;
+        bucketSize[bucketIndex]++;
     }
 
-    for (long int i = 0; i < numBuckets; ++i) {
-        buckets[i] = new Ponto[bucketSizes[i]];
-    }
-
-    for (long int i = 0; i < numBuckets; ++i) {
-        bucketSizes[i] = 0;
-    }
-
-    for (long int i = 0; i < size; ++i) {
-        long int bucketIndex = (points[i].x - minX) / bucketRange;
-        buckets[bucketIndex][bucketSizes[bucketIndex]++] = points[i];
-    }
-
-    for (long int i = 0; i < numBuckets; ++i) {
-        insertionSort2(points, size);
-    }
-
-    long int index = 0;
-    for (long int i = 0; i < numBuckets; ++i) {
-        for (long int j = 0; j < bucketSizes[i]; ++j) {
-            points[index++] = buckets[i][j];
+    for (int i = 0; i < numBuckets; i++) {
+        for (int j = 1; j < bucketSize[i]; j++) {
+            int key = buckets[i][j];
+            int k = j - 1;
+            while (k >= 0 && buckets[i][k] > key) {
+                buckets[i][k + 1] = buckets[i][k];
+                k--;
+            }
+            buckets[i][k + 1] = key;
         }
     }
 
-    for (long int i = 0; i < numBuckets; ++i) {
-        delete[] buckets[i];
+    int index = 0;
+    for (int i = 0; i < numBuckets; i++) {
+        for (int j = 0; j < bucketSize[i]; j++) {
+            points[index++].x = buckets[i][j];
+        }
     }
-    delete[] buckets;
-    delete[]bucketSizes;
 }
 
 Fecho::Fecho(Ponto* _pontos){
@@ -160,19 +145,19 @@ Fecho::Fecho(Ponto* _pontos){
     this->tamanho = sizeof(_pontos) / sizeof(int);
 }
 
-Ponto* Fecho::JarvisFecho(Ponto _pontos[], long int _n, long int& _tamanhoFecho){
+Ponto* Fecho::JarvisFecho(Ponto _pontos[], int _n, int& _tamanhoFecho){
     if (_n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
     }
 
-    long int maisEsquerda = 0;
-    for (long int i = 1; i < _n; i++) {
+    int maisEsquerda = 0;
+    for (int i = 1; i < _n; i++) {
         if (_pontos[i].x < _pontos[maisEsquerda].x)
             maisEsquerda = i;
     }
 
-    long int p = maisEsquerda, q;
+    int p = maisEsquerda, q;
     _tamanhoFecho = 0;
 
     Ponto* pontosFecho = new Ponto[_n];
@@ -181,27 +166,31 @@ Ponto* Fecho::JarvisFecho(Ponto _pontos[], long int _n, long int& _tamanhoFecho)
         pontosFecho[_tamanhoFecho++] = _pontos[p];
         q = (p + 1) % _n;
 
-        for (long int i = 0; i < _n; i++) {
-            if (isEsquerda(_pontos[p], _pontos[i], _pontos[q]))
+        for (int i = 0; i < _n; i++) {
+            if (i == p){
+                continue;  
+            }
+            if (isEsquerda(_pontos[p], _pontos[i], _pontos[q])){
                 q = i;
+            }
         }
 
         p = q;
-    } while (p != maisEsquerda);
+    } while (p != maisEsquerda && _tamanhoFecho < _n);
 
     this->pontos = pontosFecho;
     this->tamanho = _tamanhoFecho;
     return pontosFecho;
 }
 
-Ponto* Fecho::MergeConvexHullGraham(Ponto _pontos[], long int _n, long int& _tamanhoFecho){
+Ponto* Fecho::MergeConvexHullGraham(Ponto _pontos[], int _n, int& _tamanhoFecho){
     if (_n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
     }
 
-    long int menorIndice = 0;
-    for (long int i = 1; i < _n; i++) {
+    int menorIndice = 0;
+    for (int i = 1; i < _n; i++) {
         if (_pontos[i].y < _pontos[menorIndice].y || (_pontos[i].y == _pontos[menorIndice].y && _pontos[i].x < _pontos[menorIndice].x)) {
             menorIndice = i;
         }
@@ -222,7 +211,7 @@ Ponto* Fecho::MergeConvexHullGraham(Ponto _pontos[], long int _n, long int& _tam
     pontosFecho[_tamanhoFecho] = _pontos[1];
     _tamanhoFecho++;
 
-    for (long int i = 2; i < _n; i++) {
+    for (int i = 2; i < _n; i++) {
         while (_tamanhoFecho > 1 && !compararPontos(pontosFecho[_tamanhoFecho - 2], pontosFecho[_tamanhoFecho - 1], _pontos[i]))
             _tamanhoFecho--;
 
@@ -235,14 +224,14 @@ Ponto* Fecho::MergeConvexHullGraham(Ponto _pontos[], long int _n, long int& _tam
     return pontosFecho;
 }
 
-Ponto* Fecho::InsertConvexHullGraham(Ponto _pontos[], long int _n, long int& _tamanhoFecho) {
+Ponto* Fecho::InsertConvexHullGraham(Ponto _pontos[], int _n, int& _tamanhoFecho) {
     if (_n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
     }
 
-    long int menorIndice = 0;
-    for (long int i = 1; i < _n; i++) {
+    int menorIndice = 0;
+    for (int i = 1; i < _n; i++) {
         if (_pontos[i].y < _pontos[menorIndice].y || (_pontos[i].y == _pontos[menorIndice].y && _pontos[i].x < _pontos[menorIndice].x)) {
             menorIndice = i;
         }
@@ -263,7 +252,7 @@ Ponto* Fecho::InsertConvexHullGraham(Ponto _pontos[], long int _n, long int& _ta
     pontosFecho[_tamanhoFecho] = _pontos[1];
     _tamanhoFecho++;
 
-    for (long int i = 2; i < _n; i++) {
+    for (int i = 2; i < _n; i++) {
         while (_tamanhoFecho > 1 && !compararPontos(pontosFecho[_tamanhoFecho - 2], pontosFecho[_tamanhoFecho - 1], _pontos[i])) {
             _tamanhoFecho--;
         }
@@ -277,14 +266,14 @@ Ponto* Fecho::InsertConvexHullGraham(Ponto _pontos[], long int _n, long int& _ta
     return pontosFecho;
 }
 
-Ponto* Fecho::BucketConvexHullGraham(Ponto _pontos[], long int _n, long int& _tamanhoFecho) {
+Ponto* Fecho::BucketConvexHullGraham(Ponto _pontos[], int _n, int& _tamanhoFecho) {
     if (_n < 3) {
         std::cout << "Não há Fecho Convexo\n";
         return nullptr;
     }
 
-    long int menorIndice = 0;
-    for (long int i = 1; i < _n; i++) {
+    int menorIndice = 0;
+    for (int i = 1; i < _n; i++) {
         if (_pontos[i].y < _pontos[menorIndice].y || (_pontos[i].y == _pontos[menorIndice].y && _pontos[i].x < _pontos[menorIndice].x)) {
             menorIndice = i;
         }
@@ -294,7 +283,7 @@ Ponto* Fecho::BucketConvexHullGraham(Ponto _pontos[], long int _n, long int& _ta
     _pontos[0] = _pontos[menorIndice];
     _pontos[menorIndice] = temp;
 
-    bucketSort(_pontos + 1, _n);
+    bucketSort(_pontos, _n);
 
     Ponto* pontosFecho = new Ponto[_n];
     _tamanhoFecho = 0;
@@ -305,7 +294,7 @@ Ponto* Fecho::BucketConvexHullGraham(Ponto _pontos[], long int _n, long int& _ta
     pontosFecho[_tamanhoFecho] = _pontos[1];
     _tamanhoFecho++;
 
-    for (long int i = 2; i < _n; i++) {
+    for (int i = 2; i < _n; i++) {
         while (_tamanhoFecho > 1 && !compararPontos(pontosFecho[_tamanhoFecho - 2], pontosFecho[_tamanhoFecho - 1], _pontos[i])) {
             _tamanhoFecho--;
         }

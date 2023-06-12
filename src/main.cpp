@@ -10,7 +10,7 @@
 #include "Reta.hpp"
 #include "Fecho.hpp"
 
-int main(long int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 3) {
         std::cout << "\n\tERRO DE USO, utilize o Formato de Execução Correto: " << "'make run ENTRADA=" << "<nome do seu arquivo de entrada> " << "VIDEO=" << "<sim ou nao>'\n"; 
         std::cout << "\n\tExemplo: 'make run ENTRADA=entrada10.txt VIDEO=nao'\n";
@@ -37,9 +37,9 @@ int main(long int argc, char* argv[]) {
         return 1;
     }
 
-    const long int maxPontos = 100000;  // Maximum number of pontos
+    const int maxPontos = 1000000;  // Maximum number of pontos
     Ponto pontos[maxPontos];
-    long int n = 0;
+    int n = 0;
 
     std::string line;
     while (std::getline(inputFile, line)) {
@@ -51,13 +51,14 @@ int main(long int argc, char* argv[]) {
         if (!(iss >> pontos[n].x >> pontos[n].y)) {
             std::cout << "\n\tFormato de entradas do arquivo com formatação errada. Os pontos devem estar dispostos como nas entradas dadas de exemplo pelos professores.\n";
             std::cout << "\n\tExemplo:\n\t2 3\n\t1 0\n\t23 5\n\t55 100\n\n";
+            std::cout << "\n\tTambém certifique-se de que não existam linhas vazias no final do seu arquivo de entrrada\n\n";
             return 1;
         }
         n++;
     }
 
     Ponto pontos1[n], pontos2[n], pontos3[n], pontos4[n];
-    for(long int i = 0; i < n; i++){
+    for(int i = 0; i < n; i++){
         pontos1[i] = pontos[i];
         pontos2[i] = pontos[i];
         pontos3[i] = pontos[i];
@@ -66,10 +67,10 @@ int main(long int argc, char* argv[]) {
 
     Fecho fecho = Fecho(pontos);
 
-    long int tamanhoFecho = 0;
+    int tamanhoFecho = 0;
 
     //Chamando a função do Graham + MergeSort e calculando o tempo para executá-la
-    long double tempoGrahamMerge;
+    double tempoGrahamMerge;
     auto start2 = std::chrono::high_resolution_clock::now();
 
     Ponto* GrahamMergeConvexHullPoints = fecho.MergeConvexHullGraham(pontos2, n, tamanhoFecho);
@@ -78,7 +79,7 @@ int main(long int argc, char* argv[]) {
     tempoGrahamMerge = std::chrono::duration_cast<std::chrono::nanoseconds>(end2 - start2).count();
 
     //Chamando a função do Graham + InsertionSort e calculando o tempo para executá-la
-    long double tempoGrahamInsert;
+    double tempoGrahamInsert;
     auto start3 = std::chrono::high_resolution_clock::now();
 
     Ponto* GrahamInsertConvexHullPoints = fecho.InsertConvexHullGraham(pontos3, n, tamanhoFecho);
@@ -87,7 +88,7 @@ int main(long int argc, char* argv[]) {
     tempoGrahamInsert = std::chrono::duration_cast<std::chrono::nanoseconds>(end3 - start3).count();
 
     //Chamando a função do Graham + RadixSort e calculando o tempo para executá-la
-    long double tempoGrahamBucket;
+    double tempoGrahamBucket;
     auto start4 = std::chrono::high_resolution_clock::now();
 
     Ponto* GrahamBucketConvexHullPoints = fecho.BucketConvexHullGraham(pontos4, n, tamanhoFecho);
@@ -96,7 +97,7 @@ int main(long int argc, char* argv[]) {
     tempoGrahamBucket = std::chrono::duration_cast<std::chrono::nanoseconds>(end4 - start4).count();
 
     //Chamando a função do Jarvis e calculando o tempo para executá-la
-    long double tempoJarvis;
+    double tempoJarvis;
     auto start1 = std::chrono::high_resolution_clock::now();
 
     Ponto* JarvisConvexHullPoints = fecho.JarvisFecho(pontos1, n, tamanhoFecho);
@@ -107,7 +108,7 @@ int main(long int argc, char* argv[]) {
 
     //Realizando a impressão das saídas
     std::cout << "FECHO CONVEXO JARVIS\n";
-    for (long int i = 0; i < tamanhoFecho; i++) {
+    for (int i = 0; i < fecho.tamanho; i++) {
         std::cout << JarvisConvexHullPoints[i].x << ' ' << JarvisConvexHullPoints[i].y << std::endl;
     }
 
@@ -151,7 +152,7 @@ int main(long int argc, char* argv[]) {
 
             //Calcular distância máxima permitida do centro
             float maxDistance = 0.f;
-            for (long int i = 0; i < tamanhoFecho; ++i) {
+            for (int i = 0; i < tamanhoFecho; ++i) {
                 float distance = std::max(std::abs(JarvisConvexHullPoints[i].x), std::abs(JarvisConvexHullPoints[i].y));
                 maxDistance = std::max(maxDistance, distance);
             }
@@ -161,14 +162,14 @@ int main(long int argc, char* argv[]) {
 
             //Calcular centro do Polígono
             sf::Vector2f centroid(0.0f, 0.0f);
-            for (long int i = 0; i < tamanhoFecho; ++i) {
+            for (int i = 0; i < tamanhoFecho; ++i) {
                 centroid.x += JarvisConvexHullPoints[i].x;
                 centroid.y += JarvisConvexHullPoints[i].y;
             }
             centroid /= static_cast<float>(tamanhoFecho);
 
             //Desenhar todos os pontos em Azul
-            for (long int i = 0; i < n; ++i) {
+            for (int i = 0; i < n; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((pontos[i].x - centroid.x) * scaleFactor, (pontos[i].y - centroid.y) * scaleFactor);
 
                 //Desenhar vertex
@@ -180,7 +181,7 @@ int main(long int argc, char* argv[]) {
             }
 
             //Desenhar vértices em Verde
-            for (long int i = 0; i < tamanhoFecho; ++i) {
+            for (int i = 0; i < tamanhoFecho; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[i].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[i].y - centroid.y) * scaleFactor);
 
                 //Desenhar vertex
@@ -192,7 +193,7 @@ int main(long int argc, char* argv[]) {
             }
 
             //Desenhar Linhas em Vermelho
-            for (long int i = 0; i < tamanhoFecho; ++i) {
+            for (int i = 0; i < tamanhoFecho; ++i) {
                 sf::Vector2f translatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[i].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[i].y - centroid.y) * scaleFactor);
                 sf::Vector2f nextTranslatedPoint = windowCenter + sf::Vector2f((JarvisConvexHullPoints[(i + 1) % tamanhoFecho].x - centroid.x) * scaleFactor, (JarvisConvexHullPoints[(i + 1) % tamanhoFecho].y - centroid.y) * scaleFactor);
 
