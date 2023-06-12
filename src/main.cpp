@@ -124,7 +124,8 @@ int main(int argc, char* argv[]) {
     if(video == true){
         std::cout << "\nInicializando Demonstração Gráfica do Algoritmo. Isso pode demorar a depender da sua máquina\n";
         std::cout << "\nPara fechar a demonstração e terminar o programa, simplesmente feche a janela gerada. Após clicar no X, a janela ainda pode demorar um tempo para ser fechada.\n";
-        std::cout << "\nA depender da máquina, um SegFault pode ocorrer ao fechar a janela. Porém, isso é natural.\n\n";
+        std::cout << "\nA depender da máquina, um SegFault pode ocorrer ao fechar a janela. Porém, isso é natural.\n";
+        std::cout << "\nIgnorar mensagens seguintes: \n";
 
         //Criar Janela
         sf::RenderWindow window(sf::VideoMode(800, 600), "Fecho Convexo");
