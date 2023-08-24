@@ -18,16 +18,26 @@ To compile and run the program, use the following command:
 
     $ make run INPUT=<input file> VIDEO=<yes or no>
 - Replace `<input file>` with the full name of the text file containing the input Points, This file should be located in the root of the project. Its format should be like this:
+  
   PointX PointY
+  
   PointX PointY
+  
   PointX PointY
+  
   PointX PointY
+  
 
   Example:
+  
   4 9
+  
   30 34
+  
   21 5
+  
   11 1
+  
 
   You may add as many lines as you want.
 - Replace `<yes or no>` with either "yes" or "no", indicating whether you want to generate the algorithm's visualization or not.
