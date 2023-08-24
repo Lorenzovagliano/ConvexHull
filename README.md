@@ -1,6 +1,6 @@
 ## **ConvexHull**
 ---
-This program takes 2D coordinates inputted through .txt files and returns the convex hull of these coordinates and the performance of different convex hull algorithms.
+This program takes 2D coordinates inputted through .txt files and returns the convex hull of these coordinates and the performance of different convex hull algorithms. It also generates a visualization of the convex hull.
 ---
 ### A convex hull is a fundamental concept in geometry and computational geometry. It refers to the smallest convex polygon or polyhedron that encompasses a set of points in a Euclidean space (such as two-dimensional or three-dimensional space). In simpler terms, the convex hull of a set of points is the shape formed by "wrapping" a rubber band around those points in such a way that the band remains stretched and convex.
 ---
@@ -13,7 +13,7 @@ This program takes 2D coordinates inputted through .txt files and returns the co
 ### **Tools** 
 ---
 - Language: [C++ 11](https://cplusplus.com/doc/)
-- Library: [SFML](https://www.sfml-dev.org/)
+- Graphics Library: [SFML](https://www.sfml-dev.org/)
 - Compiler: [GCC](https://gcc.gnu.org/)
 - Build: [Make](https://www.gnu.org/software/make/)
 ---
