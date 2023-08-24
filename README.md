@@ -6,6 +6,7 @@ A convex hull is a fundamental concept in geometry and computational geometry. I
 ---
 ![2023-08-24 10-29-24](https://github.com/Lorenzovagliano/ConvexHull/assets/111889654/3cb7bc67-16c1-4fb6-89fd-d81116120da4)
 ![2023-08-24 10-32-45](https://github.com/Lorenzovagliano/ConvexHull/assets/111889654/548bcf3f-271b-46f3-bb69-ff7d491da330)
+![Captura de tela 2023-08-24 103538](https://github.com/Lorenzovagliano/ConvexHull/assets/111889654/78be8dff-7f0a-4e1a-98ac-2a8f2123dea2)
 ---
 ### **Tools** 
 ---
