@@ -47,3 +47,7 @@ To compile and run the program, use the following command:
   <p>
   You may add as many lines as you want.
 - Replace `<yes or no>` with either "yes" or "no", indicating whether you want to generate the algorithm's visualization or not.
+
+### **Removing object files and executable**
+---
+    make clean
