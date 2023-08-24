@@ -28,7 +28,7 @@ To compile and run the program, use the following command:
   PointX PointY
   <p>
   <p>
-  Example:
+- Example:
   <p>
   4 9
   <p>
