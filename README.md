@@ -13,16 +13,16 @@ A convex hull is a fundamental concept in geometry and computational geometry. I
 ### How to use it
 Before compiling the program, you need to have GCC, GNU Make, and the SFML graphics library installed, which is mandatory for the program to work. Before installing anything, to update the package information, use the command:
 
-    $ sudo apt-get update
+    sudo apt-get update
 To install SFML, after opening a terminal in the project directory, use the command:
 
-    $ make install
+    make install
 If preferred over `make install`, you can use the command:
 
-    $ sudo apt-get install libsfml-dev
+    sudo apt-get install libsfml-dev
 To compile and run the program, use the following command:
 
-    $ make run INPUT=<input file> VIDEO=<yes or no>
+    make run INPUT=<input file> VIDEO=<yes or no>
 - Replace `<input file>` with the full name of the text file containing the input Points, This file should be located in the root of the project. Its format should be like this:
   
   PointX PointY
