@@ -20,24 +20,24 @@ To compile and run the program, use the following command:
 - Replace `<input file>` with the full name of the text file containing the input Points, This file should be located in the root of the project. Its format should be like this:
   
   PointX PointY
-  
+  <p>
   PointX PointY
-  
+  <p>
   PointX PointY
-  
+  <p>
   PointX PointY
-  
-
+  <p>
+  <p>
   Example:
-  
+  <p>
   4 9
-  
+  <p>
   30 34
-  
+  <p>
   21 5
-  
+  <p>
   11 1
-  
-
+  <p>
+  <p>
   You may add as many lines as you want.
 - Replace `<yes or no>` with either "yes" or "no", indicating whether you want to generate the algorithm's visualization or not.
