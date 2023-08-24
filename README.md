@@ -29,5 +29,5 @@ To compile and run the program, use the following command:
   21 5
   11 1
 
-  You may adda as many lines as you want.
+  You may add as many lines as you want.
 - Replace `<yes or no>` with either "yes" or "no", indicating whether you want to generate the algorithm's visualization or not.
