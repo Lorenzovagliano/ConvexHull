@@ -2,7 +2,7 @@
 ---
 This program takes 2D coordinates inputted through .txt files and returns the convex hull of these coordinates and the performance of different convex hull algorithms.
 ---
-A convex hull is a fundamental concept in geometry and computational geometry. It refers to the smallest convex polygon or polyhedron that encompasses a set of points in a Euclidean space (such as two-dimensional or three-dimensional space). In simpler terms, the convex hull of a set of points is the shape formed by "wrapping" a rubber band around those points in such a way that the band remains stretched and convex.
+### A convex hull is a fundamental concept in geometry and computational geometry. It refers to the smallest convex polygon or polyhedron that encompasses a set of points in a Euclidean space (such as two-dimensional or three-dimensional space). In simpler terms, the convex hull of a set of points is the shape formed by "wrapping" a rubber band around those points in such a way that the band remains stretched and convex.
 ---
 ![2023-08-24 10-29-24](https://github.com/Lorenzovagliano/ConvexHull/assets/111889654/3cb7bc67-16c1-4fb6-89fd-d81116120da4)
 ![2023-08-24 10-32-45](https://github.com/Lorenzovagliano/ConvexHull/assets/111889654/548bcf3f-271b-46f3-bb69-ff7d491da330)
