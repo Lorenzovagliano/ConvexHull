@@ -8,8 +8,6 @@ This program takes 2D coordinates inputted through .txt files and returns the co
 ![2023-08-24 10-32-45](https://github.com/Lorenzovagliano/ConvexHull/assets/111889654/548bcf3f-271b-46f3-bb69-ff7d491da330)
 ![Captura de tela 2023-08-24 103538](https://github.com/Lorenzovagliano/ConvexHull/assets/111889654/78be8dff-7f0a-4e1a-98ac-2a8f2123dea2)
 ---
-### Warning: This program has not yet been completely translated from portuguese to english.
----
 ### **Tools** 
 ---
 - Language: [C++ 11](https://cplusplus.com/doc/)
